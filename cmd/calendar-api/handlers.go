@@ -8,15 +8,20 @@ import (
 )
 
 type Handler struct {
-	storage *storage.Storage
+	storage storage.Storage
 	logger  log.Logger
+	rerun   chan<- interface{}
 }
 
-func NewHandler(s *storage.Storage, l log.Logger) *Handler {
-	h := Handler{storage: s, logger: l}
+func NewHandler(l log.Logger, s storage.Storage, rerun chan interface{}) *Handler {
+	h := Handler{storage: s, logger: l, rerun: rerun}
 	return &h
 }
 func (h *Handler) GetDiff(w http.ResponseWriter, r *http.Request) {
 	http.Error(w, "Hi", http.StatusNotFound)
+}
 
+func (h *Handler) Rerun(w http.ResponseWriter, r *http.Request) {
+	h.rerun <- nil
+	http.Error(w, "Task created", http.StatusOK)
 }

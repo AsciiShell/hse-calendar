@@ -5,6 +5,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/asciishell/HSE_calendar/internal/background"
+
 	"github.com/asciishell/HSE_calendar/internal/postgresqldb"
 	"github.com/asciishell/HSE_calendar/pkg/environment"
 	"github.com/asciishell/HSE_calendar/pkg/log"
@@ -54,7 +56,9 @@ func main() {
 	}()
 	logger := log.New()
 
-	handler := NewHandler(nil, logger)
+	rerunChan := make(chan interface{})
+	handler := NewHandler(logger, db, rerunChan)
+	background.NewBackground(logger, db, rerunChan)
 
 	r := chi.NewRouter()
 	r.Use(middleware.RequestID)
