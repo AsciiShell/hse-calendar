@@ -1,4 +1,4 @@
-package calendar_api
+package main
 
 import "fmt"
 
