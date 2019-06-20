@@ -1,4 +1,4 @@
-package postgresql_gorm_storage
+package postgresqldb
 
 import (
 	"time"
