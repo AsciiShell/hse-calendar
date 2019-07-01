@@ -68,6 +68,6 @@ func main() {
 
 	r.Route("/v1", func(r chi.Router) {
 		r.Get("/diff", handler.GetDiff)
-
+		r.Get("/run", handler.Rerun)
 	})
 }
