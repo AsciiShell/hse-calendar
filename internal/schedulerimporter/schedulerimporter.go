@@ -13,15 +13,15 @@ import (
 	"github.com/asciishell/HSE_calendar/internal/lesson"
 )
 
-type SchedulerGetter interface {
+type Getter interface {
 	GetLessons(client client.Client, start time.Time, end time.Time) ([]lesson.Lesson, error)
 }
 
 const TimeOut = time.Second * 15
 
-type SourceRuzOld struct{}
+type RuzOld struct{}
 
-func (SourceRuzOld) GetLessons(client client.Client, start time.Time, end time.Time) ([]lesson.Lesson, error) {
+func (RuzOld) GetLessons(client client.Client, start time.Time, end time.Time) ([]lesson.Lesson, error) {
 	const SourceURL = "http://ruz2019.hse.ru/ruzservice.svc/personlessons?language=1&receivertype=0&email=%s&fromdate=%s&todate=%s"
 	const DateFormat = "2006.1.2"
 	httpClient := &http.Client{
@@ -61,8 +61,8 @@ func (SourceRuzOld) GetLessons(client client.Client, start time.Time, end time.T
 	return lessons, nil
 }
 
-type SourceRuzWeb struct{}
+type RuzWeb struct{}
 
-func (SourceRuzWeb) GetLessons(client client.Client, start time.Time, end time.Time) ([]lesson.Lesson, error) {
+func (RuzWeb) GetLessons(client client.Client, start time.Time, end time.Time) ([]lesson.Lesson, error) {
 	panic("implement me")
 }

@@ -15,7 +15,7 @@ func TestSourceRuzOld_GetLessons(t *testing.T) {
 	c := client.Client{Email: testMail}
 	start := time.Date(2019, 9, 1, 0, 0, 0, 0, time.UTC)
 	end := start.Add(testDuration)
-	lessons, err := SourceRuzOld{}.GetLessons(c, start, end)
+	lessons, err := RuzOld{}.GetLessons(c, start, end)
 	r.NoError(err, "Error during fetching data")
 	r.True(len(lessons) > 0, "Server return no data")
 }
