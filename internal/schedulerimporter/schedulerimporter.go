@@ -1,4 +1,4 @@
-package scheduler_source
+package schedulerimporter
 
 import (
 	"encoding/json"
@@ -22,12 +22,12 @@ const TimeOut = time.Second * 15
 type SourceRuzOld struct{}
 
 func (SourceRuzOld) GetLessons(client client.Client, start time.Time, end time.Time) ([]lesson.Lesson, error) {
-	const SourceUrl = "http://ruz2019.hse.ru/ruzservice.svc/personlessons?language=1&receivertype=0&email=%s&fromdate=%s&todate=%s"
+	const SourceURL = "http://ruz2019.hse.ru/ruzservice.svc/personlessons?language=1&receivertype=0&email=%s&fromdate=%s&todate=%s"
 	const DateFormat = "2006.1.2"
 	httpClient := &http.Client{
 		Timeout: TimeOut,
 	}
-	url := fmt.Sprintf(SourceUrl, client.Email, start.Format(DateFormat), end.Format(DateFormat))
+	url := fmt.Sprintf(SourceURL, client.Email, start.Format(DateFormat), end.Format(DateFormat))
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return nil, errors.Wrap(err, "can't create request")
@@ -51,7 +51,7 @@ func (SourceRuzOld) GetLessons(client client.Client, start time.Time, end time.T
 		return nil, errors.Wrap(err, "can't parse ruz old json")
 	}
 	var lessons []lesson.Lesson
-	for i, _ := range result {
+	for i := range result {
 		less, err := result[i].Convert()
 		if err != nil {
 			return nil, errors.Cause(err)

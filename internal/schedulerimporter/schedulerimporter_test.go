@@ -1,4 +1,4 @@
-package scheduler_source
+package schedulerimporter
 
 import (
 	"testing"
