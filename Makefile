@@ -1,4 +1,4 @@
-IMPORT_PATH ?= github.com/asciishell/HSE_calendar
+IMPORT_PATH ?= gitlab.com/asciishell/hse-calendar
 BUILD_DIR ?= bin
 PKG_DIR = .pkg
 GOROOT ?= /usr/local/go
