@@ -4,13 +4,13 @@ import (
 	"context"
 	"time"
 
-	"github.com/asciishell/HSE_calendar/internal/schedulerimporter"
+	"github.com/asciishell/hse-calendar/internal/schedulerimporter"
 
 	"github.com/pkg/errors"
 
-	"github.com/asciishell/HSE_calendar/internal/client"
-	"github.com/asciishell/HSE_calendar/internal/storage"
-	"github.com/asciishell/HSE_calendar/pkg/log"
+	"github.com/asciishell/hse-calendar/internal/client"
+	"github.com/asciishell/hse-calendar/internal/storage"
+	"github.com/asciishell/hse-calendar/pkg/log"
 )
 
 type Background struct {
@@ -50,7 +50,7 @@ func (b Background) RunFetchDiff() {
 }
 
 func (b Background) FetchUser(c client.Client) error {
-	for i := range b.importer{
+	for i := range b.importer {
 		//b.importer[i].GetLessons(c, nil, nil, )
 	}
 	// В бэкграунд над

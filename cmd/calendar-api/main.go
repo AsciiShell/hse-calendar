@@ -5,11 +5,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/asciishell/HSE_calendar/internal/background"
+	"github.com/asciishell/hse-calendar/internal/background"
 
-	"github.com/asciishell/HSE_calendar/internal/postgresqldb"
-	"github.com/asciishell/HSE_calendar/pkg/environment"
-	"github.com/asciishell/HSE_calendar/pkg/log"
+	"github.com/asciishell/hse-calendar/internal/postgresqldb"
+	"github.com/asciishell/hse-calendar/pkg/environment"
+	"github.com/asciishell/hse-calendar/pkg/log"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 )

@@ -3,8 +3,8 @@ package storage
 import (
 	"time"
 
-	"github.com/asciishell/HSE_calendar/internal/client"
-	"github.com/asciishell/HSE_calendar/internal/lesson"
+	"github.com/asciishell/hse-calendar/internal/client"
+	"github.com/asciishell/hse-calendar/internal/lesson"
 )
 
 type Storage interface {

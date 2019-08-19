@@ -3,8 +3,8 @@ package main
 import (
 	"net/http"
 
-	"github.com/asciishell/HSE_calendar/internal/storage"
-	"github.com/asciishell/HSE_calendar/pkg/log"
+	"github.com/asciishell/hse-calendar/internal/storage"
+	"github.com/asciishell/hse-calendar/pkg/log"
 )
 
 type Handler struct {

@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/asciishell/HSE_calendar/internal/client"
+	"github.com/asciishell/hse-calendar/internal/client"
 	"github.com/stretchr/testify/require"
 )
 
