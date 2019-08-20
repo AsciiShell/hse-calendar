@@ -1,12 +1,12 @@
-package postgresql_gorm_storage
+package postgresqldb
 
 import (
 	"time"
 
-	"github.com/asciishell/HSE_calendar/internal/client"
-	"github.com/asciishell/HSE_calendar/internal/lesson"
+	"github.com/asciishell/hse-calendar/internal/client"
+	"github.com/asciishell/hse-calendar/internal/lesson"
 
-	"github.com/asciishell/HSE_calendar/pkg/log"
+	"github.com/asciishell/hse-calendar/pkg/log"
 	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
 

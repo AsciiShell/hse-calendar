@@ -1,0 +1,47 @@
+stages:
+  - lint-and-test
+#  - build
+
+variables:
+  # When using dind, it's wise to use the overlayfs driver for
+  # improved performance.
+  DOCKER_DRIVER: overlay2
+
+unit_tests:
+  image: golang:1.12
+  stage: lint-and-test
+  before_script:
+    - mkdir -p /go/src/github.com/asciishell/
+    - cp -r ../hse-calendar /go/src/github.com/asciishell/
+    - cd /go/src/github.com/asciishell/hse-calendar
+  script:
+    - make test
+  tags: [docker]
+
+lint:
+  image: golangci/golangci-lint:v1.17.1
+  before_script:
+    - mkdir -p /go/src/github.com/asciishell/
+    - cp -r ../hse-calendar /go/src/github.com/asciishell/
+    - cd /go/src/github.com/asciishell/hse-calendar
+  stage: lint-and-test
+  script: make lint
+  tags: [docker]
+
+#build:
+#  image: docker:latest
+#  stage: build
+#  services:
+#    - docker:dind
+#  before_script:
+#    - apk update && apk add --virtual build-dependencies build-base git
+#    - docker info
+#  script:
+#    - make docker-images
+#    - docker login -u $DOCKER_HUB_LOGIN -p $DOCKER_HUB_PASSWORD
+#    - make docker-push
+#  after_script:
+#    - docker logout
+#  tags: [docker]
+#
+#
