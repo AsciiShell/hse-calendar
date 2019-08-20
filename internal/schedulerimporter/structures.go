@@ -9,7 +9,7 @@ import (
 )
 
 type ruzConverter interface {
-	Convert() lesson.Lesson
+	Convert() (lesson.Lesson, error)
 }
 type ruzOldJSON struct {
 	Auditorium  string `json:"auditorium"`

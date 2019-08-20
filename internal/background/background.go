@@ -2,6 +2,7 @@ package background
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/asciishell/hse-calendar/internal/schedulerimporter"
@@ -17,10 +18,11 @@ type Background struct {
 	logger   log.Logger
 	storage  storage.Storage
 	rerun    <-chan interface{}
-	importer []schedulerimporter.Getter
+	importer schedulerimporter.Getter
 }
 
 const SleepTime = time.Hour
+const FetchDuration = time.Hour * 24 * 30
 
 func (b Background) RunFetchDiff() {
 	go func() {
@@ -50,14 +52,19 @@ func (b Background) RunFetchDiff() {
 }
 
 func (b Background) FetchUser(c client.Client) error {
-	for i := range b.importer {
-		//b.importer[i].GetLessons(c, nil, nil, )
+	start := time.Now()
+	end := start.Add(FetchDuration)
+	lessons, err := b.importer.GetLessons(c, start, end)
+	if err != nil {
+		return errors.Wrapf(err, "can't get lessons for %+v", c)
 	}
-	// В бэкграунд над
+	for i := range lessons {
+		fmt.Printf("%+v\n", lessons[i])
+	}
 	return nil
 }
 
-func NewBackground(logger log.Logger, storage storage.Storage, rerun chan interface{}, importer []schedulerimporter.Getter) Background {
+func NewBackground(logger log.Logger, storage storage.Storage, rerun chan interface{}, importer schedulerimporter.Getter) Background {
 	result := Background{logger: logger, storage: storage, rerun: rerun, importer: importer}
 	result.RunFetchDiff()
 	return result

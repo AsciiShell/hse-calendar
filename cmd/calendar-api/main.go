@@ -6,8 +6,8 @@ import (
 	"time"
 
 	"github.com/asciishell/hse-calendar/internal/background"
-
 	"github.com/asciishell/hse-calendar/internal/postgresqldb"
+	"github.com/asciishell/hse-calendar/internal/schedulerimporter"
 	"github.com/asciishell/hse-calendar/pkg/environment"
 	"github.com/asciishell/hse-calendar/pkg/log"
 	"github.com/go-chi/chi"
@@ -58,7 +58,7 @@ func main() {
 
 	rerunChan := make(chan interface{})
 	handler := NewHandler(logger, db, rerunChan)
-	background.NewBackground(logger, db, rerunChan)
+	background.NewBackground(logger, db, rerunChan, schedulerimporter.RuzOld{})
 
 	r := chi.NewRouter()
 	r.Use(middleware.RequestID)

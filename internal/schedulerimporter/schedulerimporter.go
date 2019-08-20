@@ -61,8 +61,9 @@ func (RuzOld) GetLessons(client client.Client, start time.Time, end time.Time) (
 	return lessons, nil
 }
 
-type RuzWeb struct{}
-
-func (RuzWeb) GetLessons(client client.Client, start time.Time, end time.Time) ([]lesson.Lesson, error) {
-	panic("implement me")
-}
+//
+//type RuzWeb struct{}
+//
+//func (RuzWeb) GetLessons(client client.Client, start time.Time, end time.Time) ([]lesson.Lesson, error) {
+//	panic("implement me")
+//}
