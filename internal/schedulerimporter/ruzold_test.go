@@ -4,11 +4,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/asciishell/hse-calendar/internal/client"
 	"github.com/stretchr/testify/require"
+
+	"github.com/asciishell/hse-calendar/internal/client"
 )
 
-func TestSourceRuzOld_GetLessons(t *testing.T) {
+func TestRuzOld_GetLessons(t *testing.T) {
 	r := require.New(t)
 	const testMail = "aepodchezertsev@edu.hse.ru"
 	const testDuration = time.Hour * 24 * 7 * 2
