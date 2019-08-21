@@ -28,20 +28,18 @@ lint:
   script: make lint
   tags: [docker]
 
-#build:
-#  image: docker:latest
-#  stage: build
-#  services:
-#    - docker:dind
-#  before_script:
-#    - apk update && apk add --virtual build-dependencies build-base git
-#    - docker info
-#  script:
-#    - make docker-images
-#    - docker login -u $DOCKER_HUB_LOGIN -p $DOCKER_HUB_PASSWORD
-#    - make docker-push
-#  after_script:
-#    - docker logout
-#  tags: [docker]
-#
-#
+build:
+  image: docker:latest
+  stage: build
+  services:
+    - docker:dind
+  before_script:
+    - apk update && apk add --virtual build-dependencies build-base git
+    - docker info
+  script:
+    - make docker-images
+    - docker login -u $DOCKER_HUB_LOGIN -p $DOCKER_HUB_PASSWORD
+    - make docker-push
+  after_script:
+    - docker logout
+  tags: [docker]
