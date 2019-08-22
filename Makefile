@@ -7,7 +7,7 @@ GOROOT ?= /usr/local/go
 BINARIES_DIR := cmd
 BINARIES := $$(find $(BINARIES_DIR) -maxdepth 1 \( ! -iname "$(BINARIES_DIR)" \) -type d -exec basename {} \;)
 VERSION := $(shell git describe --long --tags --always --abbrev=8)
-BRANCH = $(shell git rev-parse --abbrev-ref HEAD)
+BRANCH = $(shell git branch | grep \* | cut -d ' ' -f2)
 
 DOCKER_BUILDER_FLAGS := --rm=true -u $$(id -u):$$(id -g) -v $(CURDIR):/go/src/$(IMPORT_PATH) -w /go/src/$(IMPORT_PATH)
 DOCKER_BUILDER_IMAGE := golang:1.12
@@ -16,7 +16,7 @@ DOCKER_IMAGE_SPACE ?= asciishell
 ifeq ($(BRANCH), master)
 	 DOCKER_IMAGE_TAG = $(BRANCH)
 else
-	DOCKER_IMAGE_TAG = $(BRANCH)\#$(VERSION)
+	DOCKER_IMAGE_TAG = $(BRANCH)_$(VERSION)
 endif
 
 OSFLAG 				:=
