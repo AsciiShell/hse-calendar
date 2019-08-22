@@ -36,6 +36,7 @@ build:
   before_script:
     - apk update && apk add --virtual build-dependencies build-base git
     - docker info
+    - make
   script:
     - make docker-images
     - docker login -u $DOCKER_HUB_LOGIN -p $DOCKER_HUB_PASSWORD
