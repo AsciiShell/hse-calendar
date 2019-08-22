@@ -33,9 +33,9 @@ else
 endif
 
 all:
-	@echo $(OSFLAG)
-	@echo $(VERSION)
-	@echo $(DOCKER_IMAGE_TAG)
+	$(info $$OSFLAG is [${OSFLAG}])
+	$(info $$VERSION is [${VERSION}])
+	$(info $$DOCKER_IMAGE_TAG is [${DOCKER_IMAGE_TAG}])
 # Build targets
 $(BUILD_DIR):
 	cp -rf $(GOROOT)/pkg/linux_amd64 $(CURDIR)/$(PKG_DIR) || true
