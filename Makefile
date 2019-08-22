@@ -6,14 +6,18 @@ GOROOT ?= /usr/local/go
 # Common constants
 BINARIES_DIR := cmd
 BINARIES := $$(find $(BINARIES_DIR) -maxdepth 1 \( ! -iname "$(BINARIES_DIR)" \) -type d -exec basename {} \;)
-VERSION := $(shell git describe --long --tags --always --abbrev=8 --dirty)
+VERSION := $(shell git describe --long --tags --always --abbrev=8)
 BRANCH = $(shell git rev-parse --abbrev-ref HEAD)
 
 DOCKER_BUILDER_FLAGS := --rm=true -u $$(id -u):$$(id -g) -v $(CURDIR):/go/src/$(IMPORT_PATH) -w /go/src/$(IMPORT_PATH)
 DOCKER_BUILDER_IMAGE := golang:1.12
 
 DOCKER_IMAGE_SPACE ?= asciishell
-DOCKER_IMAGE_TAG ?= $(VERSION)#$$(git rev-parse --abbrev-ref HEAD)
+ifeq ($(BRANCH), master)
+	 DOCKER_IMAGE_TAG = $(BRANCH)
+else
+	DOCKER_IMAGE_TAG = $(BRANCH)\#$(VERSION)
+endif
 
 OSFLAG 				:=
 ifeq ($(OS),Windows_NT)
@@ -30,6 +34,8 @@ endif
 
 all:
 	@echo $(OSFLAG)
+	@echo $(VERSION)
+	@echo $(DOCKER_IMAGE_TAG)
 # Build targets
 $(BUILD_DIR):
 	cp -rf $(GOROOT)/pkg/linux_amd64 $(CURDIR)/$(PKG_DIR) || true
