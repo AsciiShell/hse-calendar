@@ -6,8 +6,8 @@ GOROOT ?= /usr/local/go
 # Common constants
 BINARIES_DIR := cmd
 BINARIES := $$(find $(BINARIES_DIR) -maxdepth 1 \( ! -iname "$(BINARIES_DIR)" \) -type d -exec basename {} \;)
-VERSION := $(shell git describe --long --tags --always --abbrev=8)
-BRANCH = $(shell git branch | grep \* | cut -d ' ' -f2)
+VERSION := $(git describe --long --tags --always --abbrev=8)
+BRANCH = $(git branch | grep \* | cut -d ' ' -f2)
 
 DOCKER_BUILDER_FLAGS := --rm=true -u $$(id -u):$$(id -g) -v $(CURDIR):/go/src/$(IMPORT_PATH) -w /go/src/$(IMPORT_PATH)
 DOCKER_BUILDER_IMAGE := golang:1.12
@@ -25,15 +25,16 @@ ifeq ($(OS),Windows_NT)
 else
 	UNAME_S := $(shell uname -s)
 	ifeq ($(UNAME_S),Linux)
-		OSFLAG += LINUX
+		OSFLAG = LINUX
 	endif
 	ifeq ($(UNAME_S),Darwin)
-		OSFLAG += OSX
+		OSFLAG = OSX
 	endif
 endif
 
 all:
 	$(info $$OSFLAG is [${OSFLAG}])
+	$(info $$BRANCH is [${BRANCH}])
 	$(info $$VERSION is [${VERSION}])
 	$(info $$DOCKER_IMAGE_TAG is [${DOCKER_IMAGE_TAG}])
 # Build targets
