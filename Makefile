@@ -6,14 +6,23 @@ GOROOT ?= /usr/local/go
 # Common constants
 BINARIES_DIR := cmd
 BINARIES := $$(find $(BINARIES_DIR) -maxdepth 1 \( ! -iname "$(BINARIES_DIR)" \) -type d -exec basename {} \;)
-VERSION := $(shell git describe --long --tags --always --abbrev=8 --dirty)
-BRANCH = $(shell git rev-parse --abbrev-ref HEAD)
+VERSION := $(shell git describe --long --tags --always --abbrev=8)
+ifndef CI
+	BRANCH = $(shell git rev-parse --abbrev-ref HEAD)
+else
+	BRANCH = $(CI_COMMIT_REF_NAME)
+endif
+
 
 DOCKER_BUILDER_FLAGS := --rm=true -u $$(id -u):$$(id -g) -v $(CURDIR):/go/src/$(IMPORT_PATH) -w /go/src/$(IMPORT_PATH)
 DOCKER_BUILDER_IMAGE := golang:1.12
 
 DOCKER_IMAGE_SPACE ?= asciishell
-DOCKER_IMAGE_TAG ?= $(VERSION)#$$(git rev-parse --abbrev-ref HEAD)
+ifeq ($(BRANCH), master)
+	 DOCKER_IMAGE_TAG = $(BRANCH)
+else
+	DOCKER_IMAGE_TAG = $(BRANCH)_$(VERSION)
+endif
 
 OSFLAG 				:=
 ifeq ($(OS),Windows_NT)
@@ -21,15 +30,18 @@ ifeq ($(OS),Windows_NT)
 else
 	UNAME_S := $(shell uname -s)
 	ifeq ($(UNAME_S),Linux)
-		OSFLAG += LINUX
+		OSFLAG = LINUX
 	endif
 	ifeq ($(UNAME_S),Darwin)
-		OSFLAG += OSX
+		OSFLAG = OSX
 	endif
 endif
 
 all:
-	@echo $(OSFLAG)
+	$(info $$OSFLAG is [${OSFLAG}])
+	$(info $$BRANCH is [${BRANCH}])
+	$(info $$VERSION is [${VERSION}])
+	$(info $$DOCKER_IMAGE_TAG is [${DOCKER_IMAGE_TAG}])
 # Build targets
 $(BUILD_DIR):
 	cp -rf $(GOROOT)/pkg/linux_amd64 $(CURDIR)/$(PKG_DIR) || true
