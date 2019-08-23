@@ -1,6 +1,7 @@
 package lesson
 
 import (
+	"fmt"
 	"sort"
 	"time"
 
@@ -22,6 +23,14 @@ type Lesson struct {
 }
 
 const Day = time.Hour * 24
+
+// Take lessons should be processing
+func Handle(lessons []Lesson) {
+	go func() {
+		grouped := GroupLessons(lessons)
+		fmt.Printf("%+v", grouped)
+	}()
+}
 
 // Group lessons by date
 //

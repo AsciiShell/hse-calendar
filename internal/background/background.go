@@ -2,8 +2,9 @@ package background
 
 import (
 	"context"
-	"fmt"
 	"time"
+
+	"github.com/asciishell/hse-calendar/internal/lesson"
 
 	"github.com/asciishell/hse-calendar/internal/schedulerimporter"
 
@@ -49,9 +50,7 @@ func (b Background) FetchClient(c client.Client) error {
 	if err != nil {
 		return errors.Wrapf(err, "can't get lessons for %+v", c)
 	}
-	for i := range lessons {
-		fmt.Printf("%+v\n", lessons[i])
-	}
+	lesson.Handle(lessons)
 	return nil
 }
 func (b Background) FetchAllClients() error {
