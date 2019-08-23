@@ -35,9 +35,11 @@ func GroupLessons(lessons []Lesson) []GroupedLessons {
 	}
 	out := make([]GroupedLessons, 0, len(result))
 	for k := range result {
-		sort.Slice(result[k], func(i, j int) bool {
-			return result[k][i].Begin.Before(result[k][j].Begin)
+		slice := result[k]
+		sort.Slice(slice, func(i, j int) bool {
+			return slice[i].Begin.Before(slice[j].Begin)
 		})
+		result[k] = slice
 		out = append(out, GroupedLessons{
 			Date:    k,
 			Lessons: result[k],
