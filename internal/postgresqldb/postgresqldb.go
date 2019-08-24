@@ -91,7 +91,9 @@ func (p *PostgresGormStorage) GetClients() ([]client.Client, error) {
 
 func (p *PostgresGormStorage) GetLessonsFor(c client.Client, day time.Time) (lesson.GroupedLessons, error) {
 	var result []lesson.Lesson
-	p.DB.Where("begin::date = ?", day.Format("2006-1-2"))
+	if err := p.DB.Where("begin::date = ? and owner_refer = ?", day.Format("2006-1-2"), c.ID).Find(&result).Error; err != nil {
+		return lesson.GroupedLessons{}, errors.Wrapf(err, "can't get lessons")
+	}
 	return lesson.GroupedLessons{
 		Date:    day,
 		Lessons: result,
@@ -107,5 +109,14 @@ func (p *PostgresGormStorage) AddDiff(c client.Client, lessons []lesson.Lesson) 
 }
 
 func (p *PostgresGormStorage) SetLessonsFor(c client.Client, groupedLessons []lesson.GroupedLessons) error {
-	panic("implement me")
+	t := p.DB.Begin()
+	defer t.Commit()
+	for i := range groupedLessons {
+		if err := p.DB.Where("begin::date = ? and owner_refer = ?", groupedLessons[i].Date.Format("2006-1-2"), c.ID).Delete(&lesson.Lesson{}).Error; err != nil {
+			t.Rollback()
+			return errors.Wrapf(err, "can't delete old lessons")
+		}
+		// Create new
+	}
+	return nil
 }
