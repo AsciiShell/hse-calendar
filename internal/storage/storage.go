@@ -12,12 +12,12 @@ type Storage interface {
 	Migrate()
 	// Return list of clients
 	GetClients() ([]client.Client, error)
-	// Return list of lessons for client between two dates or from begin/to end if null
-	GetLessonsFor(c client.Client, start *time.Time, end *time.Time) ([]lesson.Lesson, error)
+	// Return list of lessons for client in particular date
+	GetLessonsFor(c client.Client, day time.Time) (lesson.GroupedLessons, error)
 	// Add calculated diff in lessons to database
-	AddDiff([]lesson.Lesson) error
+	AddDiff(c client.Client, lessons []lesson.Lesson) error
 	// Fetch diff for client and delete them
 	GetDiffBetween(c client.Client, start *time.Time, end *time.Time) ([]lesson.Lesson, error)
 	// Save actual lessons for client
-	SetLessonsFor(c client.Client, date time.Time, lessons []lesson.Lesson) error
+	SetLessonsFor(c client.Client, groupedLessons []lesson.GroupedLessons) error
 }

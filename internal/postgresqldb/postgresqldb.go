@@ -52,18 +52,14 @@ func (p *PostgresGormStorage) GetClients() ([]client.Client, error) {
 	panic("implement me")
 }
 
-func (p *PostgresGormStorage) GetLessonsFor(c client.Client, start *time.Time, end *time.Time) ([]lesson.Lesson, error) {
 	panic("implement me")
 }
 
-func (p *PostgresGormStorage) AddDiff([]lesson.Lesson) error {
 	panic("implement me")
 }
 
-func (p *PostgresGormStorage) GetDiffBetween(c client.Client, start *time.Time, end *time.Time) ([]lesson.Lesson, error) {
 	panic("implement me")
 }
 
-func (p *PostgresGormStorage) SetLessonsFor(c client.Client, date time.Time, lessons []lesson.Lesson) error {
 	panic("implement me")
 }
