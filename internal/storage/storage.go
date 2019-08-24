@@ -9,7 +9,7 @@ import (
 
 type Storage interface {
 	// Create structure if not exists
-	Migrate()
+	Migrate(index int) error
 	// Return list of clients
 	GetClients() ([]client.Client, error)
 	// Return list of lessons for client in particular date

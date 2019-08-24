@@ -26,6 +26,7 @@ func loadConfig() config {
 	cfg.DB.URL = environment.GetStr("DB_URL", "")
 	cfg.DB.Debug = environment.GetBool("DB_DEBUG", false)
 	cfg.DB.Migrate = environment.GetBool("DB_MIGRATE", false)
+	cfg.DB.MigrateNum = environment.GetInt("DB_MIGRATE_NUM", -1)
 	cfg.MaxRequests = environment.GetInt("MAX_REQUESTS", 100)
 	cfg.HTTPAddress = environment.GetStr("ADDRESS", ":8000")
 	cfg.HTTPTimeout = environment.GetDuration("HTTP_TIMEOUT", 500*time.Second)

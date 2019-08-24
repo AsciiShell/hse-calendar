@@ -9,7 +9,7 @@ import (
 )
 
 type Lesson struct {
-	ID         int            `json:"id" gorm:"PRIMARY_KEY;AUTO_INCREMENT"`
+	ID         int            `json:"id" gorm:"PRIMARY_KEY"`
 	Begin      time.Time      `json:"begin" gorm:"NOT NULL"`
 	End        time.Time      `json:"end" gorm:"NOT NULL"`
 	Name       string         `json:"name" gorm:"NOT NULL"`
@@ -18,7 +18,8 @@ type Lesson struct {
 	Lecturer   string         `json:"lecturer"`
 	KindOfWork string         `json:"kindOfWork"`
 	Stream     string         `json:"stream"`
-	Owner      *client.Client `json:"-" gorm:"NOT NULL"`
+	Owner      *client.Client `json:"-" gorm:"NOT NULL;foreignkey:OwnerRefer"`
+	OwnerRefer uint           `json:"-"`
 	CreatedAt  time.Time      `json:"created_at" gorm:"NOT NULL"`
 }
 
