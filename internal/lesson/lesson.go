@@ -29,6 +29,10 @@ const Day = time.Hour * 24
 func Handle(lessons []Lesson) {
 	go func() {
 		grouped := GroupLessons(lessons)
+		// Get data from database
+		// Compare
+		// Save new lessons
+		// Save diff
 		fmt.Printf("%+v", grouped)
 	}()
 }
