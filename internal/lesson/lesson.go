@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"sort"
 	"time"
-
-	"github.com/asciishell/hse-calendar/internal/client"
 )
 
 type Lesson struct {
@@ -18,9 +16,9 @@ type Lesson struct {
 	Lecturer   string         `json:"lecturer"`
 	KindOfWork string         `json:"kindOfWork"`
 	Stream     string         `json:"stream"`
-	Owner      *client.Client `json:"-" gorm:"NOT NULL;foreignkey:OwnerRefer"`
-	OwnerRefer uint           `json:"-"`
 	CreatedAt  time.Time      `json:"created_at" gorm:"NOT NULL"`
+	Grouped    GroupedLessons `json:"-" gorm:"foreignkey:GroupedID"`
+	GroupedID  uint
 }
 
 const Day = time.Hour * 24
@@ -55,12 +53,12 @@ func GroupLessons(lessons []Lesson) []GroupedLessons {
 		})
 		result[k] = slice
 		out = append(out, GroupedLessons{
-			Date:    k,
+			Day:     k,
 			Lessons: result[k],
 		})
 	}
 	sort.Slice(out, func(i, j int) bool {
-		return out[i].Date.Before(out[j].Date)
+		return out[i].Day.Before(out[j].Day)
 	})
 	return out
 }

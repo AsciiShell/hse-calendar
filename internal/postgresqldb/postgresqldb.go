@@ -49,12 +49,20 @@ func NewPostgresGormStorage(credential DBCredential) (*PostgresGormStorage, erro
 }
 
 //nolint:gochecknoglobals
-var migrations = []string{`create table clients
+var migrations = []string{`CREATE TABLE clients
 (
     id          SERIAL PRIMARY KEY,
     email       VARCHAR(50) NOT NULL,
     hse_ruz_id  INTEGER,
     google_code VARCHAR(50) NOT NULL UNIQUE
+);
+CREATE TABLE grouped
+(
+    id          SERIAL PRIMARY KEY,
+    client_id   INTEGER NOT NULL REFERENCES clients (ID),
+    day         date    NOT NULL,
+    is_selected BOOLEAN NOT NULL DEFAULT FALSE,
+    UNIQUE (client_id, day)
 );
 CREATE TABLE lessons
 (
@@ -67,7 +75,7 @@ CREATE TABLE lessons
     lecturer     TEXT,
     kind_of_work TEXT,
     stream       TEXT,
-    owner_refer  INTEGER                  NOT NULL REFERENCES clients (ID),
+    grouped_id   INTEGER                  NOT NULL REFERENCES grouped (ID),
     created_at   TIMESTAMP WITH TIME ZONE NOT NULL
 );`}
 
@@ -95,7 +103,7 @@ func (p *PostgresGormStorage) GetLessonsFor(c client.Client, day time.Time) (les
 		return lesson.GroupedLessons{}, errors.Wrapf(err, "can't get lessons")
 	}
 	return lesson.GroupedLessons{
-		Date:    day,
+		Day:     day,
 		Lessons: result,
 	}, nil
 }
@@ -112,7 +120,7 @@ func (p *PostgresGormStorage) SetLessonsFor(c client.Client, groupedLessons []le
 	t := p.DB.Begin()
 	defer t.Commit()
 	for i := range groupedLessons {
-		if err := p.DB.Where("begin::date = ? and owner_refer = ?", groupedLessons[i].Date.Format("2006-1-2"), c.ID).Delete(&lesson.Lesson{}).Error; err != nil {
+		if err := p.DB.Where("begin::date = ? and owner_refer = ?", groupedLessons[i].Day.Format("2006-1-2"), c.ID).Delete(&lesson.Lesson{}).Error; err != nil {
 			t.Rollback()
 			return errors.Wrapf(err, "can't delete old lessons")
 		}

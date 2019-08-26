@@ -1,8 +1,16 @@
 package lesson
 
-import "time"
+import (
+	"time"
+
+	"github.com/asciishell/hse-calendar/internal/client"
+)
 
 type GroupedLessons struct {
-	Date    time.Time `json:"date"`
-	Lessons []Lesson  `json:"lessons"`
+	ID         int           `json:"-" gorm:"PRIMARY_KEY"`
+	Client     client.Client `json:"-" gorm:"foreignkey:ClientID"`
+	ClientID   uint          `json:"-" gorm:"NOT NULL"`
+	Day        time.Time     `json:"day" gorm:"NOT NULL"`
+	IsSelected bool          `json:"-" gorm:"DEFAULT FALSE"`
+	Lessons    []Lesson      `json:"lessons" gorm:"foreignkey:GroupedID"`
 }
