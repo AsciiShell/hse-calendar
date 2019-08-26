@@ -44,6 +44,7 @@ func (RuzOld) GetLessons(client client.Client, start time.Time, end time.Time) (
 	if err != nil {
 		return nil, errors.Wrap(err, "can't do request")
 	}
+
 	defer func() {
 		_ = resp.Body.Close()
 	}()
@@ -51,6 +52,9 @@ func (RuzOld) GetLessons(client client.Client, start time.Time, end time.Time) (
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return nil, errors.Wrap(err, "can't read bytes")
+	}
+	if resp.StatusCode != http.StatusOK {
+		return nil, errors.New(fmt.Sprintf("server returned %v %s:\n%s", resp.StatusCode, resp.Status, body))
 	}
 	var result []ruzOldJSON
 	err = json.Unmarshal(body, &result)
@@ -70,7 +74,7 @@ func (RuzOld) GetLessons(client client.Client, start time.Time, end time.Time) (
 
 func (r ruzOldJSON) Convert() (lesson.Lesson, error) {
 	const timeLayout = "2006.01.02 15:04"
-	name := string(r.KindOfWork[0]) + "." + r.Discipline
+	name := string([]rune(r.KindOfWork)[0]) + "." + r.Discipline
 	start, err := time.Parse(timeLayout, r.Date+" "+r.BeginLesson)
 	if err != nil {
 		return lesson.Lesson{}, errors.Wrapf(err, "can't parse time %s %s", r.Date, r.BeginLesson)
