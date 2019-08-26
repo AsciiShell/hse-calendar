@@ -10,14 +10,14 @@ import (
 type Storage interface {
 	// Create structure if not exists
 	Migrate(index int) error
+	// Create new client
+	CreateClient(c *client.Client) error
 	// Return list of clients
 	GetClients() ([]client.Client, error)
-	// Return list of lessons for client in particular date
+	// Get list of lessons for client in particular date
 	GetLessonsFor(c client.Client, day time.Time) (lesson.GroupedLessons, error)
-	// Add calculated diff in lessons to database
-	AddDiff(c client.Client, lessons []lesson.Lesson) error
-	// Fetch diff for client and delete them
-	GetDiffBetween(c client.Client, start *time.Time, end *time.Time) ([]lesson.Lesson, error)
 	// Save actual lessons for client
-	SetLessonsFor(c client.Client, groupedLessons []lesson.GroupedLessons) error
+	SetLessonsFor(c client.Client, groupedLessons lesson.GroupedLessons) error
+	// Get unselected lessons for client between dates
+	GetNewLessonsFor(c client.Client, start time.Time, end time.Time) ([]lesson.GroupedLessons, error)
 }

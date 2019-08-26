@@ -76,7 +76,7 @@ CREATE TABLE lessons
     kind_of_work TEXT,
     stream       TEXT,
     grouped_id   INTEGER                  NOT NULL REFERENCES grouped (ID),
-    created_at   TIMESTAMP WITH TIME ZONE NOT NULL
+    created_at   TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()
 );`}
 
 func (p *PostgresGormStorage) Migrate(index int) error {
@@ -87,6 +87,10 @@ func (p *PostgresGormStorage) Migrate(index int) error {
 		return errors.Cause(err)
 	}
 	return nil
+}
+
+func (p *PostgresGormStorage) CreateClient(c *client.Client) error {
+	panic("implement me")
 }
 
 func (p *PostgresGormStorage) GetClients() ([]client.Client, error) {
@@ -108,23 +112,17 @@ func (p *PostgresGormStorage) GetLessonsFor(c client.Client, day time.Time) (les
 	}, nil
 }
 
-func (p *PostgresGormStorage) GetDiffBetween(c client.Client, start *time.Time, end *time.Time) ([]lesson.Lesson, error) {
-	panic("implement me")
-}
-
-func (p *PostgresGormStorage) AddDiff(c client.Client, lessons []lesson.Lesson) error {
-	panic("implement me")
-}
-
-func (p *PostgresGormStorage) SetLessonsFor(c client.Client, groupedLessons []lesson.GroupedLessons) error {
+func (p *PostgresGormStorage) SetLessonsFor(c client.Client, groupedLessons lesson.GroupedLessons) error {
 	t := p.DB.Begin()
 	defer t.Commit()
-	for i := range groupedLessons {
-		if err := p.DB.Where("begin::date = ? and owner_refer = ?", groupedLessons[i].Day.Format("2006-1-2"), c.ID).Delete(&lesson.Lesson{}).Error; err != nil {
-			t.Rollback()
-			return errors.Wrapf(err, "can't delete old lessons")
-		}
-		// Create new
+	if err := p.DB.Where("begin::date = ? and owner_refer = ?", groupedLessons.Day.Format("2006-1-2"), c.ID).Delete(&lesson.Lesson{}).Error; err != nil {
+		t.Rollback()
+		return errors.Wrapf(err, "can't delete old lessons")
 	}
+	// Create new
 	return nil
+}
+
+func (p *PostgresGormStorage) GetNewLessonsFor(c client.Client, start time.Time, end time.Time) ([]lesson.GroupedLessons, error) {
+	panic("implement me")
 }
