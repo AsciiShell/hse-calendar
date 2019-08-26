@@ -90,7 +90,10 @@ func (p *PostgresGormStorage) Migrate(index int) error {
 }
 
 func (p *PostgresGormStorage) CreateClient(c *client.Client) error {
-	panic("implement me")
+	if err := p.DB.Create(c).Error; err != nil {
+		return errors.Wrapf(err, "can't get clients")
+	}
+	return nil
 }
 
 func (p *PostgresGormStorage) GetClients() ([]client.Client, error) {
@@ -103,7 +106,7 @@ func (p *PostgresGormStorage) GetClients() ([]client.Client, error) {
 
 func (p *PostgresGormStorage) GetLessonsFor(c client.Client, day time.Time) (lesson.GroupedLessons, error) {
 	var result []lesson.Lesson
-	if err := p.DB.Where("begin::date = ? and owner_refer = ?", day.Format("2006-1-2"), c.ID).Find(&result).Error; err != nil {
+	if err := p.DB.Where("grouped_id IN (SELECT id FROM grouped WHERE day::date = ? and client_id = ?)", day.Format("2006-1-2"), c.ID).Find(&result).Error; err != nil {
 		return lesson.GroupedLessons{}, errors.Wrapf(err, "can't get lessons")
 	}
 	return lesson.GroupedLessons{
