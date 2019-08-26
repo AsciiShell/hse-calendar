@@ -59,7 +59,7 @@ var migrations = []string{`CREATE TABLE clients
 CREATE TABLE grouped
 (
     id          SERIAL PRIMARY KEY,
-    client_id   INTEGER NOT NULL REFERENCES clients (ID),
+    client_id   INTEGER NOT NULL REFERENCES clients (ID) ON DELETE CASCADE,
     day         date    NOT NULL,
     is_selected BOOLEAN NOT NULL DEFAULT FALSE,
     UNIQUE (client_id, day)
@@ -75,7 +75,7 @@ CREATE TABLE lessons
     lecturer     TEXT,
     kind_of_work TEXT,
     stream       TEXT,
-    grouped_id   INTEGER                  NOT NULL REFERENCES grouped (ID),
+    grouped_id   INTEGER                  NOT NULL REFERENCES grouped (ID) ON DELETE CASCADE,
     created_at   TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()
 );`}
 
@@ -118,11 +118,16 @@ func (p *PostgresGormStorage) GetLessonsFor(c client.Client, day time.Time) (les
 func (p *PostgresGormStorage) SetLessonsFor(c client.Client, groupedLessons lesson.GroupedLessons) error {
 	t := p.DB.Begin()
 	defer t.Commit()
-	if err := p.DB.Where("begin::date = ? and owner_refer = ?", groupedLessons.Day.Format("2006-1-2"), c.ID).Delete(&lesson.Lesson{}).Error; err != nil {
+	if err := p.DB.Where("day::date = ? and client_id = ?", groupedLessons.Day.Format("2006-1-2"), c.ID).Delete(lesson.GroupedLessons{}).Error; err != nil {
 		t.Rollback()
 		return errors.Wrapf(err, "can't delete old lessons")
 	}
-	// Create new
+	groupedLessons.Client = c
+	groupedLessons.ClientID = c.ID
+	if err := p.DB.Create(groupedLessons).Error; err != nil {
+		t.Rollback()
+		return errors.Wrapf(err, "can't create new lessons group")
+	}
 	return nil
 }
 
