@@ -12,6 +12,8 @@ type Storage interface {
 	Migrate(index int) error
 	// Create new client
 	CreateClient(c *client.Client) error
+	// Get client
+	GetClient(c *client.Client) error
 	// Return list of clients
 	GetClients() ([]client.Client, error)
 	// Get list of lessons for client in particular date

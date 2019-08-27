@@ -96,6 +96,12 @@ func (p *PostgresGormStorage) CreateClient(c *client.Client) error {
 	return nil
 }
 
+func (p *PostgresGormStorage) GetClient(c *client.Client) error {
+	if err := p.DB.Where(c).First(c).Error; err != nil {
+		return errors.Wrapf(err, "can't get client %+v", c)
+	}
+	return nil
+}
 func (p *PostgresGormStorage) GetClients() ([]client.Client, error) {
 	var result []client.Client
 	if err := p.DB.Find(&result).Error; err != nil {
