@@ -21,5 +21,5 @@ type Storage interface {
 	// Save actual lessons for client
 	SetLessonsFor(c client.Client, groupedLessons lesson.GroupedLessons) error
 	// Get unselected lessons for client between dates
-	GetNewLessonsFor(c client.Client, start time.Time, end time.Time) ([]lesson.GroupedLessons, error)
+	GetNewLessonsFor(c client.Client) ([]lesson.GroupedLessons, error)
 }

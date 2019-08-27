@@ -61,10 +61,10 @@ func TestPostgresGormStorage_CreateClient(t *testing.T) {
 		r.True(len(less.Lessons) > 0, "no lessons")
 		err = db.SetLessonsFor(cli[i], less)
 		r.NoError(err, "can't update lessons")
-		gl, err := db.GetNewLessonsFor(cli[i], date, date)
+		gl, err := db.GetNewLessonsFor(cli[i])
 		r.NoError(err, "can't get new lessons")
 		r.True(len(gl) > 0)
-		gl, err = db.GetNewLessonsFor(cli[i], date, date)
+		gl, err = db.GetNewLessonsFor(cli[i])
 		r.NoError(err, "can't get new lessons second time")
 		r.True(len(gl) == 0)
 

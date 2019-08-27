@@ -137,21 +137,15 @@ func (p *PostgresGormStorage) SetLessonsFor(c client.Client, groupedLessons less
 	return nil
 }
 
-func (p *PostgresGormStorage) GetNewLessonsFor(c client.Client, start time.Time, end time.Time) ([]lesson.GroupedLessons, error) {
+func (p *PostgresGormStorage) GetNewLessonsFor(c client.Client) ([]lesson.GroupedLessons, error) {
 	var result []lesson.GroupedLessons
 	if err := p.DB.
-		Where("client_id = ? AND (day::date BETWEEN ? AND ?) AND NOT is_selected",
-			c.ID,
-			start.Format("2006-1-2"),
-			end.Format("2006-1-2")).
+		Where("client_id = ? AND NOT is_selected", c.ID).
 		Find(&result).Error; err != nil {
 		return nil, errors.Wrapf(err, "can't read new lessons")
 	}
 	if err := p.DB.Model(lesson.GroupedLessons{}).
-		Where("client_id = ? AND (day::date BETWEEN ? AND ?) AND NOT is_selected",
-			c.ID,
-			start.Format("2006-1-2"),
-			end.Format("2006-1-2")).
+		Where("client_id = ? AND NOT is_selected", c.ID).
 		UpdateColumn("is_selected", true).Error; err != nil {
 		return nil, errors.Wrapf(err, "can't read new lessons")
 	}
