@@ -1,9 +1,12 @@
 package lesson
 
 import (
+	"encoding/json"
 	"sort"
 	"time"
 )
+
+const GoogleDateFormat = "January 02, 2006 15:04:05 MST"
 
 type Lesson struct {
 	ID         int             `json:"id" gorm:"PRIMARY_KEY"`
@@ -18,6 +21,30 @@ type Lesson struct {
 	CreatedAt  time.Time       `json:"created_at" gorm:"NOT NULL"`
 	Grouped    *GroupedLessons `json:"-" gorm:"foreignkey:GroupedID"`
 	GroupedID  uint
+}
+
+type lessonJSON struct {
+	Begin      string `json:"begin"`
+	End        string `json:"end"`
+	Name       string `json:"name"`
+	Building   string `json:"building"`
+	Auditorium string `json:"auditorium"`
+	Lecturer   string `json:"lecturer"`
+	KindOfWork string `json:"kindOfWork"`
+	Stream     string `json:"stream"`
+}
+
+func (l Lesson) MarshalJSON() ([]byte, error) {
+	return json.Marshal(lessonJSON{
+		Begin:      l.Begin.Format(GoogleDateFormat),
+		End:        l.End.Format(GoogleDateFormat),
+		Name:       l.Name,
+		Building:   l.Building,
+		Auditorium: l.Auditorium,
+		Lecturer:   l.Lecturer,
+		KindOfWork: l.KindOfWork,
+		Stream:     l.Stream,
+	})
 }
 
 const Day = time.Hour * 24

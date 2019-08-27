@@ -1,6 +1,7 @@
 package lesson
 
 import (
+	"encoding/json"
 	"time"
 
 	"github.com/asciishell/hse-calendar/internal/client"
@@ -15,6 +16,17 @@ type GroupedLessons struct {
 	Lessons    []Lesson      `json:"lessons" gorm:"foreignkey:GroupedID"`
 }
 
+type groupedJSON struct {
+	Day     string   `json:"date"`
+	Lessons []Lesson `json:"lessons"`
+}
+
+func (g GroupedLessons) MarshalJSON() ([]byte, error) {
+	return json.Marshal(groupedJSON{
+		Day:     g.Day.Format(GoogleDateFormat),
+		Lessons: g.Lessons,
+	})
+}
 func (GroupedLessons) TableName() string {
 	return "grouped"
 }
