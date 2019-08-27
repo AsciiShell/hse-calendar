@@ -23,7 +23,7 @@ type Background struct {
 }
 
 const SleepTime = time.Hour
-const FetchDuration = time.Hour * 24 * 30
+const FetchDuration = time.Hour * 24 * 30 * 2
 
 func (b Background) RunFetchDiff() {
 	go func() {

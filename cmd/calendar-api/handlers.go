@@ -1,7 +1,11 @@
 package main
 
 import (
+	"encoding/json"
 	"net/http"
+
+	"github.com/asciishell/hse-calendar/internal/client"
+	"github.com/go-chi/chi"
 
 	"github.com/asciishell/hse-calendar/internal/storage"
 	"github.com/asciishell/hse-calendar/pkg/log"
@@ -18,7 +22,27 @@ func NewHandler(l log.Logger, s storage.Storage, rerun chan interface{}) *Handle
 	return &h
 }
 func (h *Handler) GetDiff(w http.ResponseWriter, r *http.Request) {
-	http.Error(w, "Hi", http.StatusNotFound)
+	id := chi.URLParam(r, "id")
+	email := chi.URLParam(r, "email")
+	c := client.Client{
+		Email:      email,
+		GoogleCode: id,
+	}
+	if err := h.storage.GetClient(&c); err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+	grouped, err := h.storage.GetNewLessonsFor(c)
+	if err != nil {
+		h.logger.Errorf("%+v:\n%+v", r, err)
+		http.Error(w, "500 Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+	err = json.NewEncoder(w).Encode(grouped)
+	if err != nil {
+		h.logger.Errorf("%+v:\n%+v", r, err)
+		return
+	}
 }
 
 func (h *Handler) Rerun(w http.ResponseWriter, r *http.Request) {

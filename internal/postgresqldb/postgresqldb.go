@@ -96,6 +96,12 @@ func (p *PostgresGormStorage) CreateClient(c *client.Client) error {
 	return nil
 }
 
+func (p *PostgresGormStorage) GetClient(c *client.Client) error {
+	if err := p.DB.Where(c).First(c).Error; err != nil {
+		return errors.Wrapf(err, "can't get client %+v", c)
+	}
+	return nil
+}
 func (p *PostgresGormStorage) GetClients() ([]client.Client, error) {
 	var result []client.Client
 	if err := p.DB.Find(&result).Error; err != nil {
@@ -131,22 +137,17 @@ func (p *PostgresGormStorage) SetLessonsFor(c client.Client, groupedLessons less
 	return nil
 }
 
-func (p *PostgresGormStorage) GetNewLessonsFor(c client.Client, start time.Time, end time.Time) ([]lesson.GroupedLessons, error) {
+func (p *PostgresGormStorage) GetNewLessonsFor(c client.Client) ([]lesson.GroupedLessons, error) {
 	var result []lesson.GroupedLessons
-	if err := p.DB.
-		Where("client_id = ? AND (day::date BETWEEN ? AND ?) AND NOT is_selected",
-			c.ID,
-			start.Format("2006-1-2"),
-			end.Format("2006-1-2")).
-		Find(&result).Error; err != nil {
+	if err := p.DB.Where("client_id = ? AND NOT is_selected", c.ID).Find(&result).Error; err != nil {
 		return nil, errors.Wrapf(err, "can't read new lessons")
 	}
-	if err := p.DB.Model(lesson.GroupedLessons{}).
-		Where("client_id = ? AND (day::date BETWEEN ? AND ?) AND NOT is_selected",
-			c.ID,
-			start.Format("2006-1-2"),
-			end.Format("2006-1-2")).
-		UpdateColumn("is_selected", true).Error; err != nil {
+	for i := range result {
+		if err := p.DB.Where("grouped_id = ?", &result[i].ID).Find(&result[i].Lessons).Error; err != nil {
+			return nil, errors.Wrapf(err, "can't get particular lesson %+v", result[i])
+		}
+	}
+	if err := p.DB.Model(lesson.GroupedLessons{}).Where("client_id = ? AND NOT is_selected", c.ID).UpdateColumn("is_selected", true).Error; err != nil {
 		return nil, errors.Wrapf(err, "can't read new lessons")
 	}
 	return result, nil
