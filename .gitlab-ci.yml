@@ -10,6 +10,12 @@ variables:
 unit_tests:
   image: golang:1.12
   stage: lint-and-test
+  services:
+    - postgres:10.10-alpine
+  variables:
+    POSTGRES_DB: $POSTGRES_DB_GITLAB
+    POSTGRES_USER: $POSTGRES_USER_GITLAB
+    POSTGRES_PASSWORD: $POSTGRES_PASSWORD_GITLAB
   before_script:
     - mkdir -p /go/src/github.com/asciishell/
     - cp -r ../hse-calendar /go/src/github.com/asciishell/

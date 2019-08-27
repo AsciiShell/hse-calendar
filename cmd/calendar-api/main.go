@@ -1,8 +1,7 @@
 package main
 
 import (
-	"encoding/base64"
-	"strings"
+	"net/http"
 	"time"
 
 	"github.com/asciishell/hse-calendar/internal/background"
@@ -24,9 +23,10 @@ type config struct {
 
 func loadConfig() config {
 	cfg := config{}
-	cfg.DB.URL = environment.GetStr("BASE64_DB_URL", "")
+	cfg.DB.URL = environment.GetStr("DB_URL", "")
 	cfg.DB.Debug = environment.GetBool("DB_DEBUG", false)
 	cfg.DB.Migrate = environment.GetBool("DB_MIGRATE", false)
+	cfg.DB.MigrateNum = environment.GetInt("DB_MIGRATE_NUM", -1)
 	cfg.MaxRequests = environment.GetInt("MAX_REQUESTS", 100)
 	cfg.HTTPAddress = environment.GetStr("ADDRESS", ":8000")
 	cfg.HTTPTimeout = environment.GetDuration("HTTP_TIMEOUT", 500*time.Second)
@@ -34,14 +34,6 @@ func loadConfig() config {
 	if cfg.PrintConfig {
 		log.New().Infof("%+v", cfg)
 	}
-	if cfg.DB.URL != "" {
-		dbURL, err := base64.StdEncoding.DecodeString(cfg.DB.URL)
-		if err != nil {
-			log.New().Fatalf("Can't parse base64 db url: %s", err)
-		}
-		cfg.DB.URL = strings.TrimSpace(string(dbURL))
-	}
-
 	return cfg
 }
 func main() {
@@ -70,4 +62,7 @@ func main() {
 		r.Get("/diff", handler.GetDiff)
 		r.Get("/run", handler.Rerun)
 	})
+	if err := http.ListenAndServe(cfg.HTTPAddress, r); err != nil {
+		logger.Fatalf("server error:%s", err)
+	}
 }

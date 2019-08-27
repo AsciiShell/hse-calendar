@@ -4,6 +4,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/asciishell/hse-calendar/pkg/environment"
+
 	"github.com/stretchr/testify/require"
 
 	"github.com/asciishell/hse-calendar/internal/client"
@@ -11,7 +13,7 @@ import (
 
 func TestRuzOld_GetLessons(t *testing.T) {
 	r := require.New(t)
-	const testMail = "aepodchezertsev@edu.hse.ru"
+	testMail := environment.GetStr("TEST_EMAIL", "")
 	const testDuration = time.Hour * 24 * 7 * 2
 	c := client.Client{Email: testMail}
 	start := time.Date(2019, 9, 1, 0, 0, 0, 0, time.UTC)
