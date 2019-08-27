@@ -96,4 +96,4 @@ test:
 ci-deploy:
 	ssh -t root@$$TARGET_HOST 'cd calendar-api && docker-compose stop'
 	scp ./docker-compose.yml root@$$TARGET_HOST:calendar-api/docker-compose.yml
-	ssh -t root@$$TARGET_HOST 'cd calendar-api && IMAGE_TAG=$(DOCKER_IMAGE_TAG) docker-compose up -d'
+	ssh -t root@$$TARGET_HOST 'cd calendar-api && IMAGE_TAG=$(DOCKER_IMAGE_TAG) docker-compose pull && IMAGE_TAG=$(DOCKER_IMAGE_TAG) docker-compose up -d'
