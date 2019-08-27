@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"net/http"
 
 	"github.com/asciishell/hse-calendar/internal/client"
@@ -31,7 +32,17 @@ func (h *Handler) GetDiff(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
-	http.Error(w, "Hi", http.StatusNotFound)
+	grouped, err := h.storage.GetNewLessonsFor(c)
+	if err != nil {
+		h.logger.Errorf("%+v:\n%+v", r, err)
+		http.Error(w, "500 Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+	err = json.NewEncoder(w).Encode(grouped)
+	if err != nil {
+		h.logger.Errorf("%+v:\n%+v", r, err)
+		return
+	}
 }
 
 func (h *Handler) Rerun(w http.ResponseWriter, r *http.Request) {
