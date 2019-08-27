@@ -18,3 +18,20 @@ type GroupedLessons struct {
 func (GroupedLessons) TableName() string {
 	return "grouped"
 }
+
+func (g GroupedLessons) Equal(g2 GroupedLessons) bool {
+	if len(g.Lessons) != len(g2.Lessons) {
+		return false
+	}
+
+baseLoop:
+	for i := range g.Lessons {
+		for j := range g2.Lessons {
+			if g.Lessons[i].Equal(g2.Lessons[j]) {
+				continue baseLoop
+			}
+		}
+		return false
+	}
+	return true
+}

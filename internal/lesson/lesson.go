@@ -1,7 +1,6 @@
 package lesson
 
 import (
-	"fmt"
 	"sort"
 	"time"
 )
@@ -23,16 +22,15 @@ type Lesson struct {
 
 const Day = time.Hour * 24
 
-// Take lessons should be processing
-func Handle(lessons []Lesson) {
-	go func() {
-		grouped := GroupLessons(lessons)
-		// Get data from database
-		// Compare
-		// Save new lessons
-		// Save diff
-		fmt.Printf("%+v", grouped)
-	}()
+func (l Lesson) Equal(l2 Lesson) bool {
+	return l.Begin == l2.Begin &&
+		l.End == l2.End &&
+		l.Name == l2.Name &&
+		l.Building == l2.Building &&
+		l.Auditorium == l2.Auditorium &&
+		l.Lecturer == l2.Lecturer &&
+		l.KindOfWork == l2.KindOfWork &&
+		l.Stream == l2.Stream
 }
 
 // Group lessons by date
