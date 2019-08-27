@@ -122,9 +122,9 @@ func (p *PostgresGormStorage) SetLessonsFor(c client.Client, groupedLessons less
 		t.Rollback()
 		return errors.Wrapf(err, "can't delete old lessons")
 	}
-	groupedLessons.Client = c
+	//groupedLessons.Client = c
 	groupedLessons.ClientID = c.ID
-	if err := p.DB.Create(groupedLessons).Error; err != nil {
+	if err := p.DB.Create(&groupedLessons).Error; err != nil {
 		t.Rollback()
 		return errors.Wrapf(err, "can't create new lessons group")
 	}
