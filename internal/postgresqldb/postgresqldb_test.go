@@ -20,7 +20,7 @@ func TestPostgresGormStorage_CreateClient(t *testing.T) {
 	db, err := NewPostgresGormStorage(DBCredential{
 		URL:        environment.GetStr("DB_URL_TEST", ""),
 		Debug:      true,
-		Migrate:    false,
+		Migrate:    true,
 		MigrateNum: 0,
 	})
 	r.NoError(err, "can't use database")
