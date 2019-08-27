@@ -55,11 +55,13 @@ func main() {
 	r := chi.NewRouter()
 	r.Use(middleware.RequestID)
 	r.Use(middleware.RealIP)
+	r.Use(middleware.Logger)
+	r.Use(middleware.Recoverer)
 	r.Use(middleware.Throttle(cfg.MaxRequests))
 	r.Use(middleware.Timeout(cfg.HTTPTimeout))
 
 	r.Route("/v1", func(r chi.Router) {
-		r.Get("/diff", handler.GetDiff)
+		r.Get("/diff/{email}/{id}", handler.GetDiff)
 		r.Get("/run", handler.Rerun)
 	})
 	if err := http.ListenAndServe(cfg.HTTPAddress, r); err != nil {
