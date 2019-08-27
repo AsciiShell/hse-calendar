@@ -23,8 +23,8 @@ type Lesson struct {
 const Day = time.Hour * 24
 
 func (l Lesson) Equal(l2 Lesson) bool {
-	return l.Begin == l2.Begin &&
-		l.End == l2.End &&
+	return l.Begin.Equal(l2.Begin) &&
+		l.End.Equal(l2.End) &&
 		l.Name == l2.Name &&
 		l.Building == l2.Building &&
 		l.Auditorium == l2.Auditorium &&
