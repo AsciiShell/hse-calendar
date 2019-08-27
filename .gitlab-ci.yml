@@ -74,4 +74,5 @@ deploy:
   only:
     - master
     - tags
+    - dev_cd
   tags: [docker]
