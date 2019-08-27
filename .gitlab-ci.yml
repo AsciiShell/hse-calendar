@@ -1,6 +1,7 @@
 stages:
   - lint-and-test
   - build
+  - deploy
 
 variables:
   # When using dind, it's wise to use the overlayfs driver for
@@ -49,4 +50,29 @@ build:
     - make docker-push
   after_script:
     - docker logout
+  tags: [docker]
+
+deploy:
+  image: docker:latest
+  stage: deploy
+  environment:
+    name: Scaleway
+    url: https://calendar.asciishell.ru
+  services:
+    - docker:dind
+  before_script:
+    - apk update && apk add --virtual build-dependencies build-base git openssh-client
+    - docker info
+    - eval $(ssh-agent -s)
+    - echo $CI_SSH_PRIVATE_KEY | base64 -d | tr -d '\r' | ssh-add - > /dev/null
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
+  script:
+    - make ci-deploy
+#  when: manual
+  only:
+    - master
+    - tags
+    - dev_cd
   tags: [docker]

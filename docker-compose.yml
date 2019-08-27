@@ -1,0 +1,9 @@
+version: '3'
+services:
+  calendar-api:
+    image: "asciishell/calendar-api:${IMAGE_TAG}"
+    env_file: docker.env
+    ports:
+      - "8000:8000"
+    restart: always
+    network_mode: "host"
