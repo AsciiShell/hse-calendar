@@ -50,7 +50,21 @@ func (b Background) FetchClient(c client.Client) error {
 	if err != nil {
 		return errors.Wrapf(err, "can't get lessons for %+v", c)
 	}
-	lesson.Handle(lessons)
+	grouped := lesson.GroupLessons(lessons)
+	for i := range grouped {
+		newLessons := grouped[i]
+		oldLessons, err := b.storage.GetLessonsFor(c, grouped[i].Day)
+		if err != nil {
+			return errors.Cause(err)
+		}
+		if newLessons.Equal(oldLessons) {
+			continue
+		}
+
+		if err := b.storage.SetLessonsFor(c, newLessons); err != nil {
+			return errors.Cause(err)
+		}
+	}
 	return nil
 }
 func (b Background) FetchAllClients() error {
