@@ -70,8 +70,6 @@ deploy:
     - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
   script:
     - make ci-deploy
-#  when: manual
   only:
     - master
-    - dev_location
   tags: [docker]
