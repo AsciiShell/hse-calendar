@@ -73,4 +73,5 @@ deploy:
 #  when: manual
   only:
     - master
+    - dev_*
   tags: [docker]
