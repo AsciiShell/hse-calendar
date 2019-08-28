@@ -79,6 +79,7 @@ func (b Background) FetchAllClients() error {
 			if err := b.FetchClient(client2); err != nil {
 				b.logger.WithError(err)
 			}
+			b.logger.Infof("client %v handled successfully", client2)
 		}(c)
 	}
 	return nil
