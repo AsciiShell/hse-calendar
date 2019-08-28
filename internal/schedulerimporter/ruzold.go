@@ -16,6 +16,7 @@ import (
 const timeOut = time.Second * 15
 const Location = "Europe/Moscow"
 
+// nolint:gochecknoglobals
 var loc, _ = time.LoadLocation(Location)
 
 type RuzOld struct{}
