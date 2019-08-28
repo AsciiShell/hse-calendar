@@ -75,7 +75,10 @@ func (RuzOld) GetLessons(client client.Client, start time.Time, end time.Time) (
 
 func (r ruzOldJSON) Convert() (lesson.Lesson, error) {
 	const timeLayout = "2006.01.02 15:04"
-	loc := time.FixedZone("UTC+3", 3*60*60)
+	loc, err := time.LoadLocation(Location)
+	if err != nil {
+		return lesson.Lesson{}, errors.Wrapf(err, "timezone %s not found", Location)
+	}
 	name := string([]rune(r.KindOfWork)[0]) + "." + r.Discipline
 	start, err := time.ParseInLocation(timeLayout, r.Date+" "+r.BeginLesson, loc)
 	if err != nil {
