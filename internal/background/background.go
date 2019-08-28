@@ -50,21 +50,24 @@ func (b Background) FetchClient(c client.Client) error {
 	if err != nil {
 		return errors.Wrapf(err, "can't get lessons for %+v", c)
 	}
-	grouped := lesson.GroupLessons(lessons)
-	for i := range grouped {
-		newLessons := grouped[i]
-		oldLessons, err := b.storage.GetLessonsFor(c, grouped[i].Day)
-		if err != nil {
-			return errors.Cause(err)
+	go func() {
+		grouped := lesson.GroupLessons(lessons)
+		for i := range grouped {
+			newLessons := grouped[i]
+			oldLessons, err := b.storage.GetLessonsFor(c, grouped[i].Day)
+			if err != nil {
+				b.logger.Error(err.Error())
+			}
+			if newLessons.Equal(oldLessons) {
+				continue
+			}
+			if err := b.storage.SetLessonsFor(c, newLessons); err != nil {
+				b.logger.Error(err.Error())
+			}
 		}
-		if newLessons.Equal(oldLessons) {
-			continue
-		}
+		b.logger.Infof("client %v handled successfully", c)
+	}()
 
-		if err := b.storage.SetLessonsFor(c, newLessons); err != nil {
-			return errors.Cause(err)
-		}
-	}
 	return nil
 }
 func (b Background) FetchAllClients() error {
@@ -74,12 +77,11 @@ func (b Background) FetchAllClients() error {
 		return errors.Wrapf(err, "can't fetch clients from storage")
 	}
 	for i := range clients {
-
 		if err := b.FetchClient(clients[i]); err != nil {
 			b.logger.Errorf("can't fetch for client %v: %+v", clients[i], err)
-			continue
+		} else {
+			b.logger.Infof("client %v fetched successfully", clients[i])
 		}
-		b.logger.Infof("client %v handled successfully", clients[i])
 	}
 	return nil
 }
