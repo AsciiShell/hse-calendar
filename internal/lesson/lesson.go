@@ -7,6 +7,7 @@ import (
 )
 
 const GoogleDateFormat = "January 02, 2006 15:04:05 MST"
+const dateLayout = "2006-01-02"
 
 type Lesson struct {
 	ID         int             `json:"id" gorm:"PRIMARY_KEY"`
@@ -65,9 +66,9 @@ func (l Lesson) Equal(l2 Lesson) bool {
 // Return ordered by date list of structures,
 // where every element ordered by begin time
 func GroupLessons(lessons []Lesson) []GroupedLessons {
-	result := make(map[time.Time][]Lesson)
+	result := make(map[string][]Lesson)
 	for i := range lessons {
-		day := lessons[i].Begin.Truncate(Day)
+		day := lessons[i].Begin.Format(dateLayout)
 		result[day] = append(result[day], lessons[i])
 	}
 	out := make([]GroupedLessons, 0, len(result))
@@ -77,8 +78,9 @@ func GroupLessons(lessons []Lesson) []GroupedLessons {
 			return slice[i].Begin.Before(slice[j].Begin)
 		})
 		result[k] = slice
+		d, _ := time.Parse(dateLayout, k)
 		out = append(out, GroupedLessons{
-			Day:     k,
+			Day:     d,
 			Lessons: result[k],
 		})
 	}
