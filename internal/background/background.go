@@ -73,14 +73,13 @@ func (b Background) FetchAllClients() error {
 	if err != nil {
 		return errors.Wrapf(err, "can't fetch clients from storage")
 	}
-	for _, c := range clients {
-		go func(client2 client.Client) {
+	for i := range clients {
 
-			if err := b.FetchClient(client2); err != nil {
-				b.logger.WithError(err)
-			}
-			b.logger.Infof("client %v handled successfully", client2)
-		}(c)
+		if err := b.FetchClient(clients[i]); err != nil {
+			b.logger.Errorf("can't fetch for client %v: %+v", clients[i], err)
+			continue
+		}
+		b.logger.Infof("client %v handled successfully", clients[i])
 	}
 	return nil
 }
