@@ -43,29 +43,29 @@ func (b Background) waitSignal() {
 	case <-b.rerun:
 	}
 }
-func (b Background) FetchClient(c client.Client) error {
+func (b Background) FetchClient(c client.Client, nextSignal chan interface{}) {
 	start := time.Now()
 	end := start.Add(FetchDuration)
-	lessons, err := b.importer.GetLessons(c, start, end)
+	lessons, err := b.importer.GetLessons(c, start, end, nextSignal)
 	if err != nil {
-		return errors.Wrapf(err, "can't get lessons for %+v", c)
+		b.logger.Errorf("can't get lessons for %+v: %+v", c, err)
+		return
 	}
 	grouped := lesson.GroupLessons(lessons)
 	for i := range grouped {
 		newLessons := grouped[i]
 		oldLessons, err := b.storage.GetLessonsFor(c, grouped[i].Day)
 		if err != nil {
-			return errors.Cause(err)
+			b.logger.Errorf("can't get lessons from storage for %v: %+v", c, err)
 		}
 		if newLessons.Equal(oldLessons) {
 			continue
 		}
-
 		if err := b.storage.SetLessonsFor(c, newLessons); err != nil {
-			return errors.Cause(err)
+			b.logger.Errorf("can't set lessons for %v: %+v", c, err)
 		}
 	}
-	return nil
+	b.logger.Infof("client %v handled successfully", c)
 }
 func (b Background) FetchAllClients() error {
 
@@ -73,13 +73,10 @@ func (b Background) FetchAllClients() error {
 	if err != nil {
 		return errors.Wrapf(err, "can't fetch clients from storage")
 	}
+	nextSignal := make(chan interface{}, 1)
 	for i := range clients {
-
-		if err := b.FetchClient(clients[i]); err != nil {
-			b.logger.Errorf("can't fetch for client %v: %+v", clients[i], err)
-			continue
-		}
-		b.logger.Infof("client %v handled successfully", clients[i])
+		go b.FetchClient(clients[i], nextSignal)
+		<-nextSignal
 	}
 	return nil
 }
