@@ -73,7 +73,7 @@ func (b Background) FetchAllClients() error {
 	if err != nil {
 		return errors.Wrapf(err, "can't fetch clients from storage")
 	}
-	nextSignal := make(chan interface{})
+	nextSignal := make(chan interface{}, 1)
 	for i := range clients {
 		go b.FetchClient(clients[i], nextSignal)
 		<-nextSignal
