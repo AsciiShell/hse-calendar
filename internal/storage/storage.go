@@ -12,6 +12,8 @@ type Storage interface {
 	Migrate(index int) error
 	// Create new client
 	CreateClient(c *client.Client) error
+	// Delete client
+	DeleteClient(c *client.Client) error
 	// Get client
 	GetClient(c *client.Client) error
 	// Return list of clients
