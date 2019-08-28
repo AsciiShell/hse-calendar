@@ -50,6 +50,8 @@ build:
     - make docker-push
   after_script:
     - docker logout
+  except:
+    - schedules
   tags: [docker]
 
 deploy:
@@ -72,4 +74,6 @@ deploy:
     - make ci-deploy
   only:
     - master
+  except:
+    - schedules
   tags: [docker]
