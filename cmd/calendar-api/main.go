@@ -61,8 +61,12 @@ func main() {
 	r.Use(middleware.Timeout(cfg.HTTPTimeout))
 
 	r.Route("/v1", func(r chi.Router) {
-		r.Get("/diff/{email}/{id}", handler.GetDiff)
+		r.Post("/diff/{email}/{id}", handler.GetDiff)
 		r.Get("/run", handler.Rerun)
+		r.Route("/client/{email}/{id}", func(r chi.Router) {
+			r.Post("/", handler.CreateClient)
+			r.Delete("/", handler.DeleteClient)
+		})
 	})
 	if err := http.ListenAndServe(cfg.HTTPAddress, r); err != nil {
 		logger.Fatalf("server error:%s", err)
