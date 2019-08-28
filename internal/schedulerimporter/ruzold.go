@@ -14,6 +14,9 @@ import (
 )
 
 const timeOut = time.Second * 15
+const Location = "Europe/Moscow"
+
+var loc, _ = time.LoadLocation(Location)
 
 type RuzOld struct{}
 type ruzOldJSON struct {
@@ -75,11 +78,11 @@ func (RuzOld) GetLessons(client client.Client, start time.Time, end time.Time) (
 func (r ruzOldJSON) Convert() (lesson.Lesson, error) {
 	const timeLayout = "2006.01.02 15:04"
 	name := string([]rune(r.KindOfWork)[0]) + "." + r.Discipline
-	start, err := time.Parse(timeLayout, r.Date+" "+r.BeginLesson)
+	start, err := time.ParseInLocation(timeLayout, r.Date+" "+r.BeginLesson, loc)
 	if err != nil {
 		return lesson.Lesson{}, errors.Wrapf(err, "can't parse time %s %s", r.Date, r.BeginLesson)
 	}
-	end, err := time.Parse(timeLayout, r.Date+" "+r.EndLesson)
+	end, err := time.ParseInLocation(timeLayout, r.Date+" "+r.EndLesson, loc)
 	if err != nil {
 		return lesson.Lesson{}, errors.Wrapf(err, "can't parse time %s %s", r.Date, r.BeginLesson)
 	}
