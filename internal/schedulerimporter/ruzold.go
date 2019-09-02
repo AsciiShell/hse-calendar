@@ -13,7 +13,7 @@ import (
 	"github.com/asciishell/hse-calendar/internal/lesson"
 )
 
-const timeOut = time.Second * 15
+const timeOut = time.Second * 60
 const Location = "Europe/Moscow"
 
 type RuzOld struct{}
@@ -79,7 +79,10 @@ func (r ruzOldJSON) Convert() (lesson.Lesson, error) {
 	if err != nil {
 		return lesson.Lesson{}, errors.Wrapf(err, "timezone %s not found", Location)
 	}
-	name := string([]rune(r.KindOfWork)[0]) + "." + r.Discipline
+	name := r.Discipline
+	if len(r.KindOfWork) > 0 {
+		name = string([]rune(r.KindOfWork)[0]) + "." + name
+	}
 	start, err := time.ParseInLocation(timeLayout, r.Date+" "+r.BeginLesson, loc)
 	if err != nil {
 		return lesson.Lesson{}, errors.Wrapf(err, "can't parse time %s %s", r.Date, r.BeginLesson)
