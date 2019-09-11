@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"sort"
 	"time"
+
+	"github.com/asciishell/hse-calendar/internal/tz"
 )
 
 const GoogleDateFormat = "January 02, 2006 15:04:05 MST"
@@ -33,18 +35,20 @@ type lessonJSON struct {
 	Lecturer   string `json:"lecturer"`
 	KindOfWork string `json:"kindOfWork"`
 	Stream     string `json:"stream"`
+	CreatedAt  string `json:"created_at"`
 }
 
 func (l Lesson) MarshalJSON() ([]byte, error) {
 	return json.Marshal(lessonJSON{
-		Begin:      l.Begin.Format(GoogleDateFormat),
-		End:        l.End.Format(GoogleDateFormat),
+		Begin:      tz.GetTime(l.Begin).Format(GoogleDateFormat),
+		End:        tz.GetTime(l.End).Format(GoogleDateFormat),
 		Name:       l.Name,
 		Building:   l.Building,
 		Auditorium: l.Auditorium,
 		Lecturer:   l.Lecturer,
 		KindOfWork: l.KindOfWork,
 		Stream:     l.Stream,
+		CreatedAt:  tz.GetTime(l.CreatedAt).Format(time.RFC3339),
 	})
 }
 

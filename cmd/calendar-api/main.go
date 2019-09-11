@@ -7,6 +7,7 @@ import (
 	"github.com/asciishell/hse-calendar/internal/background"
 	"github.com/asciishell/hse-calendar/internal/postgresqldb"
 	"github.com/asciishell/hse-calendar/internal/schedulerimporter"
+	"github.com/asciishell/hse-calendar/internal/tz"
 	"github.com/asciishell/hse-calendar/pkg/environment"
 	"github.com/asciishell/hse-calendar/pkg/log"
 	"github.com/go-chi/chi"
@@ -19,6 +20,7 @@ type config struct {
 	HTTPTimeout time.Duration
 	MaxRequests int
 	PrintConfig bool
+	Timezone    string
 }
 
 func loadConfig() config {
@@ -31,6 +33,7 @@ func loadConfig() config {
 	cfg.HTTPAddress = environment.GetStr("ADDRESS", ":8000")
 	cfg.HTTPTimeout = environment.GetDuration("HTTP_TIMEOUT", 500*time.Second)
 	cfg.PrintConfig = environment.GetBool("PRINT_CONFIG", false)
+	cfg.Timezone = environment.GetStr("TZ", "")
 	if cfg.PrintConfig {
 		log.New().Infof("%+v", cfg)
 	}
@@ -38,7 +41,9 @@ func loadConfig() config {
 }
 func main() {
 	cfg := loadConfig()
-
+	if err := tz.SetTimezone(cfg.Timezone); err != nil {
+		log.New().Fatalf("can't set timezone:%s", err)
+	}
 	db, err := postgresqldb.NewPostgresGormStorage(cfg.DB)
 	if err != nil {
 		log.New().Fatalf("can't use database:%s", err)
