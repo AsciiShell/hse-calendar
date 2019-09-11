@@ -40,8 +40,8 @@ type lessonJSON struct {
 
 func (l Lesson) MarshalJSON() ([]byte, error) {
 	return json.Marshal(lessonJSON{
-		Begin:      l.Begin.Format(GoogleDateFormat),
-		End:        l.End.Format(GoogleDateFormat),
+		Begin:      tz.GetTime(l.Begin).Format(GoogleDateFormat),
+		End:        tz.GetTime(l.End).Format(GoogleDateFormat),
 		Name:       l.Name,
 		Building:   l.Building,
 		Auditorium: l.Auditorium,
