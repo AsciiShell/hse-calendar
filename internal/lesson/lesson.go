@@ -70,10 +70,26 @@ func (l Lesson) Equal(l2 Lesson) bool {
 // Return ordered by date list of structures,
 // where every element ordered by begin time
 func GroupLessons(lessons []Lesson) []GroupedLessons {
+	if len(lessons) == 0 {
+		return nil
+	}
 	result := make(map[string][]Lesson)
+	minDate := lessons[0].Begin
+	maxDate := lessons[0].Begin
 	for i := range lessons {
 		day := lessons[i].Begin.Format(dateLayout)
 		result[day] = append(result[day], lessons[i])
+		if lessons[i].Begin.Before(minDate) {
+			minDate = lessons[i].Begin
+		} else if lessons[i].Begin.After(maxDate) {
+			maxDate = lessons[i].Begin
+		}
+	}
+	for d := minDate; d.Before(maxDate); d = d.Add(time.Hour * 24) {
+		day := d.Format(dateLayout)
+		if _, ok := result[day]; !ok {
+			result[day] = make([]Lesson, 0)
+		}
 	}
 	out := make([]GroupedLessons, 0, len(result))
 	for k := range result {
