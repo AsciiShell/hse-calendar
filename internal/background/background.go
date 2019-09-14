@@ -48,7 +48,7 @@ func (b Background) FetchClient(c client.Client, nextSignal chan interface{}) {
 	end := start.Add(FetchDuration)
 	lessons, err := b.importer.GetLessons(c, start, end, nextSignal)
 	if err != nil {
-		b.logger.Errorf("can't get lessons for %+v: %+v", c, err)
+		b.logger.Warnf("can't get lessons for %+v: %+v", c, err)
 		return
 	}
 	grouped := lesson.GroupLessons(lessons)
@@ -56,13 +56,13 @@ func (b Background) FetchClient(c client.Client, nextSignal chan interface{}) {
 		newLessons := grouped[i]
 		oldLessons, err := b.storage.GetLessonsFor(c, grouped[i].Day)
 		if err != nil {
-			b.logger.Errorf("can't get lessons from storage for %v: %+v", c, err)
+			b.logger.Warnf("can't get lessons from storage for %v: %+v", c, err)
 		}
 		if newLessons.Equal(oldLessons) {
 			continue
 		}
 		if err := b.storage.SetLessonsFor(c, newLessons); err != nil {
-			b.logger.Errorf("can't set lessons for %v: %+v", c, err)
+			b.logger.Warnf("can't set lessons for %v: %+v", c, err)
 		}
 	}
 	b.logger.Infof("client %v handled successfully", c)
