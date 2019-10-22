@@ -8,5 +8,5 @@ import (
 )
 
 type Getter interface {
-	GetLessons(client client.Client, start time.Time, end time.Time, endSignal chan<- interface{}) ([]lesson.Lesson, error)
+	GetLessons(client client.Client, start time.Time, end time.Time) ([]lesson.Lesson, error)
 }

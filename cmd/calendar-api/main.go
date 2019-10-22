@@ -55,7 +55,7 @@ func main() {
 
 	rerunChan := make(chan interface{})
 	handler := NewHandler(logger, db, rerunChan)
-	background.NewBackground(logger, db, rerunChan, schedulerimporter.RuzOld{})
+	background.NewBackground(logger, db, rerunChan, schedulerimporter.NewRuzOld())
 
 	r := chi.NewRouter()
 	r.Use(middleware.RequestID)
