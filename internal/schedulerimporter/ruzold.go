@@ -49,11 +49,10 @@ func (r RuzOld) GetLessons(client client.Client, start time.Time, end time.Time)
 		return nil, errors.Wrap(err, "can't create request")
 	}
 	var resp *http.Response
-	func() {
-		r.Mutex.Lock()
-		defer r.Mutex.Unlock()
-		resp, err = httpClient.Do(req)
-	}()
+	r.Mutex.Lock()
+	resp, err = httpClient.Do(req)
+	r.Mutex.Unlock()
+
 	if err != nil {
 		return nil, errors.Wrap(err, "can't do request")
 	}
