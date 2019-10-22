@@ -22,6 +22,7 @@ type Logger interface {
 
 	With(fields ...Field) Logger
 	WithError(err error) Logger
+	Print(v ...interface{})
 }
 
 func New() Logger {
@@ -60,6 +61,10 @@ type Field = zap.Field
 
 type structuredLogger struct {
 	zapLogger *zap.Logger
+}
+
+func (l *structuredLogger) Print(v ...interface{}) {
+	l.zapLogger.Sugar().Info(v...)
 }
 
 func (l *structuredLogger) Debug(msg string) {

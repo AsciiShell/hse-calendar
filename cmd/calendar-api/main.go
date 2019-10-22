@@ -60,7 +60,10 @@ func main() {
 	r := chi.NewRouter()
 	r.Use(middleware.RequestID)
 	r.Use(middleware.RealIP)
-	r.Use(middleware.Logger)
+	r.Use(middleware.RequestLogger(&middleware.DefaultLogFormatter{
+		Logger:  logger,
+		NoColor: false,
+	}))
 	r.Use(middleware.Recoverer)
 	r.Use(middleware.Throttle(cfg.MaxRequests))
 	r.Use(middleware.Timeout(cfg.HTTPTimeout))
