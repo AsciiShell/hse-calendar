@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"sync"
 	"time"
 
 	"github.com/pkg/errors"
@@ -16,7 +17,14 @@ import (
 const timeOut = time.Second * 60
 const Location = "Europe/Moscow"
 
-type RuzOld struct{}
+type RuzOld struct {
+	Mutex *sync.Mutex
+}
+
+func NewRuzOld() *RuzOld {
+	return &RuzOld{Mutex: &sync.Mutex{}}
+}
+
 type ruzOldJSON struct {
 	Auditorium  string `json:"auditorium"`
 	BeginLesson string `json:"beginLesson"`
@@ -29,7 +37,7 @@ type ruzOldJSON struct {
 	Stream      string `json:"stream"`
 }
 
-func (RuzOld) GetLessons(client client.Client, start time.Time, end time.Time, endSignal chan<- interface{}) ([]lesson.Lesson, error) {
+func (r RuzOld) GetLessons(client client.Client, start time.Time, end time.Time) ([]lesson.Lesson, error) {
 	const SourceURL = "http://ruz2019.hse.ru/ruzservice.svc/personlessons?language=1&receivertype=0&email=%s&fromdate=%s&todate=%s"
 	const DateFormat = "2006.1.2"
 	httpClient := &http.Client{
@@ -40,12 +48,14 @@ func (RuzOld) GetLessons(client client.Client, start time.Time, end time.Time, e
 	if err != nil {
 		return nil, errors.Wrap(err, "can't create request")
 	}
+	var resp *http.Response
+	r.Mutex.Lock()
+	resp, err = httpClient.Do(req)
+	r.Mutex.Unlock()
 
-	resp, err := httpClient.Do(req)
 	if err != nil {
 		return nil, errors.Wrap(err, "can't do request")
 	}
-	endSignal <- nil
 	defer func() {
 		_ = resp.Body.Close()
 	}()

@@ -43,10 +43,10 @@ func (b Background) waitSignal() {
 	case <-b.rerun:
 	}
 }
-func (b Background) FetchClient(c client.Client, nextSignal chan interface{}) {
+func (b Background) FetchClient(c client.Client) {
 	start := time.Now()
 	end := start.Add(FetchDuration)
-	lessons, err := b.importer.GetLessons(c, start, end, nextSignal)
+	lessons, err := b.importer.GetLessons(c, start, end)
 	if err != nil {
 		b.logger.Warnf("can't get lessons for %+v: %+v", c, err)
 		return
@@ -73,10 +73,8 @@ func (b Background) FetchAllClients() error {
 	if err != nil {
 		return errors.Wrapf(err, "can't fetch clients from storage")
 	}
-	nextSignal := make(chan interface{}, 1)
 	for i := range clients {
-		go b.FetchClient(clients[i], nextSignal)
-		<-nextSignal
+		go b.FetchClient(clients[i])
 	}
 	return nil
 }
