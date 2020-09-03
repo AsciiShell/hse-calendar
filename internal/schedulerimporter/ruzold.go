@@ -110,5 +110,5 @@ func (r ruzOldJSON) Convert() (lesson.Lesson, error) {
 		Auditorium: r.Auditorium,
 		Building:   r.Building,
 		Lecturer:   r.Lecturer,
-		Stream:     r.Stream+'\n'+r.Url}, nil
+		Stream:     r.Stream + "\n" + r.Url}, nil
 }
