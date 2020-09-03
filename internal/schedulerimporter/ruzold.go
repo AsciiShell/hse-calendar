@@ -35,7 +35,7 @@ type ruzOldJSON struct {
 	KindOfWork  string `json:"kindOfWork"`
 	Lecturer    string `json:"lecturer"`
 	Stream      string `json:"stream"`
-	Url			string `json:"url1"`
+	URL         string `json:"url1"`
 }
 
 func (r RuzOld) GetLessons(client client.Client, start time.Time, end time.Time) ([]lesson.Lesson, error) {
@@ -110,5 +110,5 @@ func (r ruzOldJSON) Convert() (lesson.Lesson, error) {
 		Auditorium: r.Auditorium,
 		Building:   r.Building,
 		Lecturer:   r.Lecturer,
-		Stream:     r.Stream + "\n" + r.Url}, nil
+		Stream:     r.Stream + "\n" + r.URL}, nil
 }
