@@ -39,12 +39,12 @@ type ruzOldJSON struct {
 }
 
 func (r RuzOld) GetLessons(client client.Client, start time.Time, end time.Time) ([]lesson.Lesson, error) {
-	const SourceURL = "http://ruz2019.hse.ru/ruzservice.svc/personlessons?language=1&receivertype=0&email=%s&fromdate=%s&todate=%s"
+	const SourceURL = "https://ruz.hse.ru/api/schedule/student/%d?start=%s&finish=%s&lng=1"
 	const DateFormat = "2006.1.2"
 	httpClient := &http.Client{
 		Timeout: timeOut,
 	}
-	url := fmt.Sprintf(SourceURL, client.Email, start.Format(DateFormat), end.Format(DateFormat))
+	url := fmt.Sprintf(SourceURL, client.HSERuzID, start.Format(DateFormat), end.Format(DateFormat))
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return nil, errors.Wrap(err, "can't create request")

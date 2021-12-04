@@ -15,7 +15,7 @@ endif
 
 
 DOCKER_BUILDER_FLAGS := --rm=true -u $$(id -u):$$(id -g) -v $(CURDIR):/go/src/$(IMPORT_PATH) -w /go/src/$(IMPORT_PATH)
-DOCKER_BUILDER_IMAGE := golang:1.12
+DOCKER_BUILDER_IMAGE := golang:1.17
 
 DOCKER_IMAGE_SPACE ?= asciishell
 ifeq ($(BRANCH), master)
